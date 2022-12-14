@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Добро пожаловать!</title>
+  </head>
+  <body>
+    <p>
+        HOSTNAME: {{ ansible_facts['hostname'] }} <br>
+        IP: {{ ansible_facts['default_ipv4']['address'] }} <br>
+        RAM: {{ ansible_facts['memtotal_mb'] }} <br>
+        FREEMEM: {{ ansible_facts['memfree_mb'] }} <br>
+        SWAP: {{ ansible_memory_mb.swap.total }} <br>
+        CPU: {{ ansible_processor_cores }} <br>
+        CPU_COUNT: {{ ansible_processor_count }} <br>
+        cpu_thread_per_socket: {{ ansible_processor_threads_per_core }} <br>
+        HDD: {{ ansible_facts['devices']['nvme0n1']['size'] }} <br>
+        distro: {{ ansible_facts['distribution'] }} <br>
+        distro_version: {{ ansible_facts['distribution_version'] }} </p>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+---
+# tasks file for apache_deploy
+
+- block: # === Block for RedHat === #
+  - name: Install Web Server for RedHat
+    yum: name=httpd state=latest
+  - name: Start Web Server for RedHat
+    service: name=httpd state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+
+- block: # === Block for Debian === #
+  - name: Install Web Server for Debian
+    apt: name=apache2 state=latest
+  - name: Start Web Server for Debian
+    service: name=apache2 state=started enabled=yes
+  when: ansible_os_family == "Debian"
+
+- name: ufw enabled
+  community.general.ufw:
+    state: "enabled"
+    policy: "deny"
+    logging: "on"
+
+- name: ufw rules
+  community.general.ufw:
+    rule: "allow"
+    port: "{{ item }}"
+    proto: "tcp"
+  with_items:
+     - "80"
+     - "22"
+     - "443"
+
+- name: Create index.html using Jinja2
+  template:
+    src: index.j2
+    dest: /var/www/html/index.html
+  notify: 
+    - Restart Apache RedHat
+    - Restart Apache Debian
+
+- name: Check that you can connect (GET) to a page and it returns a status 200
+  ansible.builtin.uri:
+    url: "http://{{ ansible_facts['default_ipv4']['address'] }}"
+#    return_content: yes
+    
+  register: result
+
+- name: Print result
+#  debug: var=result.response[1]
+  debug: msg="Status of site is {{ result['status'] }}"
+# задача распечатает контент что описан в index.html
+#- debug: msg="Operating on instance {{ result['content'] }}"
